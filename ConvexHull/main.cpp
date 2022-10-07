@@ -27,7 +27,7 @@ void run_quickhull(std::vector<vector2f> point_cloud,
 	);
 
 	
-	std::vector<std::pair<vector2f, vector2f>> maxima = std::make_pair(*point_cloud.begin(), *point_cloud.rbegin());
+	std::pair<vector2f, vector2f> maxima = std::make_pair(*point_cloud.begin(), *point_cloud.rbegin());
 	hull.push_back(maxima);
 	window->set_hull(hull);
 
