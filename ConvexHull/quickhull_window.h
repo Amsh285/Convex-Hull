@@ -1,7 +1,9 @@
 #pragma once
 
-#include<mutex>
+
 #include<vector>
+
+#include "node.h"
 
 #include "vector2f.h"
 #include "window.h"
@@ -9,6 +11,7 @@
 class quickhull_window : public ch_project::window
 {
 public:
+	void set_hull(ch_project::node<vector2f>* head);
 	void set_hull(const std::vector<std::pair<vector2f, vector2f>>& hull);
 
 	quickhull_window(const std::string& title, const std::vector<vector2f>& point_cloud) 
@@ -20,6 +23,5 @@ protected:
 private:
 	std::vector<std::pair<vector2f, vector2f>> m_hull;
 	std::vector<vector2f> m_point_cloud;
-	std::mutex m_mut;
 };
 

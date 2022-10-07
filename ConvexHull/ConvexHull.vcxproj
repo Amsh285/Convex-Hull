@@ -153,16 +153,25 @@
   <ItemGroup>
     <ClCompile Include="drawing_context.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="matrix3f.cpp" />
     <ClCompile Include="point_drawing_window.cpp" />
     <ClCompile Include="quickhull_window.cpp" />
     <ClCompile Include="vector2f.cpp" />
+    <ClCompile Include="vector3f.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="color_rgba.h" />
+    <ClInclude Include="conversions.h" />
     <ClInclude Include="drawing_context.h" />
+    <ClInclude Include="math_helpers.h" />
+    <ClInclude Include="matrix3f.h" />
+    <ClInclude Include="matrix3f_factory.h" />
+    <ClInclude Include="node.h" />
     <ClInclude Include="point_drawing_window.h" />
     <ClInclude Include="quickhull_window.h" />
     <ClInclude Include="vector2f.h" />
+    <ClInclude Include="vector3f.h" />
     <ClInclude Include="window.h" />
     <ClInclude Include="window_eventargs.h" />
   </ItemGroup>
