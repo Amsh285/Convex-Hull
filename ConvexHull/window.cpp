@@ -9,7 +9,7 @@ void ch_project::window::display()
 
 	{
 		std::unique_ptr<SDL_Window, void(*)(SDL_Window*)> window(
-			SDL_CreateWindow("Point drawing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 820, 0),
+			SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_width, m_height, 0),
 			[](SDL_Window* win) { SDL_DestroyWindow(win); }
 		);
 

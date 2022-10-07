@@ -1,17 +1,57 @@
 // ConvexHull.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include <algorithm>
 #include <iostream>
+#include <memory>
+#include <thread>
 #include <vector>
+
 #include "SDL.h"
-//#include "vector2f.h"
 
 #include "point_drawing_window.h"
+#include "quickhull_window.h"
+
+
+void run_quickhull(std::vector<vector2f> point_cloud,
+	std::shared_ptr<quickhull_window> window)
+{
+	if (point_cloud.size() == 1)
+		return;
+
+	std::vector<std::pair<vector2f, vector2f>> hull;
+	std::sort(
+		point_cloud.begin(),
+		point_cloud.end(),
+		[](const vector2f& left, const vector2f& right) {return left.X() < right.X(); }
+	);
+
+	
+	std::vector<std::pair<vector2f, vector2f>> maxima = std::make_pair(*point_cloud.begin(), *point_cloud.rbegin());
+	hull.push_back(maxima);
+	window->set_hull(hull);
+
+	
+}
+
 
 int main(int argc, char* argv[])
 {
-	point_drawing_window point_drawing;
+	std::vector<vector2f> point_cloud;
+
+	point_drawing_window point_drawing("Point Drawing");
 	point_drawing.display();
+	point_cloud = point_drawing.get_vectors();
+
+
+
+	/*quickhull_window q_window("Quickhull", point_cloud);*/
+	std::shared_ptr<quickhull_window> q_window(new quickhull_window("Quickhull", point_cloud));
+
+	std::thread t1(run_quickhull, point_cloud, q_window);
+	q_window->display();
+
+	t1.join();
 
 	return EXIT_SUCCESS;
 }

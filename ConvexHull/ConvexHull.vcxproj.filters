@@ -30,6 +30,9 @@
     <ClCompile Include="drawing_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="quickhull_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector2f.h">
@@ -45,6 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="drawing_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="quickhull_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

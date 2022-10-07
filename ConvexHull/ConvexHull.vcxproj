@@ -154,12 +154,14 @@
     <ClCompile Include="drawing_context.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="point_drawing_window.cpp" />
+    <ClCompile Include="quickhull_window.cpp" />
     <ClCompile Include="vector2f.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="drawing_context.h" />
     <ClInclude Include="point_drawing_window.h" />
+    <ClInclude Include="quickhull_window.h" />
     <ClInclude Include="vector2f.h" />
     <ClInclude Include="window.h" />
     <ClInclude Include="window_eventargs.h" />
