@@ -30,6 +30,15 @@
     <ClCompile Include="drawing_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="quickhull_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix3f.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vector3f.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector2f.h">
@@ -45,6 +54,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="drawing_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="quickhull_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="color_rgba.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix3f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vector3f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix3f_factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="conversions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="math_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

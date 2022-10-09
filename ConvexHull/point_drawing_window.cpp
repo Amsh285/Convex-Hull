@@ -22,7 +22,9 @@ void point_drawing_window::handle_event(const SDL_Event& event, ch_project::wind
 			break;
 		}
 		case SDL_QUIT:
-			m_vectors.clear();
+			args.cancel = true;
+			break;
+		case SDLK_KP_ENTER:
 			args.cancel = true;
 			break;
 		default:
