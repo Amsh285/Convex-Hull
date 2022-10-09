@@ -11,10 +11,11 @@
 class quickhull_window : public ch_project::window
 {
 public:
-	void set_hull(ch_project::node<vector2f>* head);
+	/*void set_hull();*/
+	void set_hull(const std::vector < std::tuple<int, vector2f, vector2f>>& hull);
 	void set_hull(const std::vector<std::pair<vector2f, vector2f>>& hull);
 
-	quickhull_window(const std::string& title, const std::vector<vector2f>& point_cloud) 
+	quickhull_window(const std::string& title, const std::vector<vector2f>& point_cloud)
 		: ch_project::window(title), m_point_cloud(point_cloud) {};
 
 protected:

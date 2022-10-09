@@ -21,9 +21,27 @@
 #include "math_helpers.h"
 
 
+int g_id = 0;
+
+
+void remove_from_hull(std::vector<std::tuple<int, vector2f, vector2f>>& hull, const int& id)
+{
+	if (hull.empty())
+		return;
+
+	auto it = std::find_if(hull.begin(), hull.end(),
+		[&id](const std::tuple<int, vector2f, vector2f>& item) {return std::get<0>(item) == id; });
+
+	/*std::cout << "remove: " << remove << std::endl;
+	std::cout << "it: " << std::get<0>(*it) << std::endl;*/
+
+	if (it != hull.end())
+		hull.erase(it);
+}
+
 void find_hull(const std::vector<vector2f>& remaining_data, const vector2f& from, const vector2f& to,
-	std::vector<std::pair<vector2f, vector2f>>& hull, std::shared_ptr<quickhull_window>& window,
-	const ch_project::color_rgba& helpline_color)
+	std::vector<std::tuple<int ,vector2f, vector2f>>& hull, std::shared_ptr<quickhull_window>& window,
+	const ch_project::color_rgba& helpline_color, const int& remove)
 {
 	if (remaining_data.empty())
 		return;
@@ -83,12 +101,15 @@ void find_hull(const std::vector<vector2f>& remaining_data, const vector2f& from
 
 	window->add_lines(helplines, helpline_color, 1.0f, 1.0f);
 	window->add_dot(c, ch_project::color::red(), 6.0f, 6.0f);
+	
+	if (remove > -1)
+		remove_from_hull(hull, remove);
 
-	hull.push_back(std::make_pair(from, c));
-	hull.push_back(std::make_pair(c, to));
+	std::tuple<int, vector2f, vector2f> r(++g_id, from, c);
+	hull.push_back(r);
 
-
-
+	std::tuple<int, vector2f, vector2f> l(++g_id, c, to);
+	hull.push_back(l);
 
 	SDL_Delay(2000);
 	window->clear_dots();
@@ -125,23 +146,24 @@ void find_hull(const std::vector<vector2f>& remaining_data, const vector2f& from
 	SDL_Delay(2000);
 	window->clear_dots();
 
-	find_hull(s1, from, c, hull, window, helpline_color);
-	find_hull(s2, c, to, hull, window, helpline_color);
+	find_hull(s1, from, c, hull, window, helpline_color, std::get<0>(r));
+	find_hull(s2, c, to, hull, window, helpline_color, std::get<0>(l));
 }
-
 
 void run_quickhull(std::vector<vector2f> considered_points,
 	std::shared_ptr<quickhull_window> window)
 {
-	std::vector<std::pair<vector2f, vector2f>> hull;
+	std::vector<std::tuple<int, vector2f, vector2f>> hull;
 	std::sort(
 		considered_points.begin(),
 		considered_points.end(),
 		[](const vector2f& left, const vector2f& right) {return left.X() < right.X(); }
 	);
 
+	const int middle_id = g_id;
 	std::pair<vector2f, vector2f> maxima = std::make_pair(*considered_points.begin(), *considered_points.rbegin());
-	hull.push_back(std::make_pair(maxima.first, maxima.second));
+	hull.push_back(std::tuple<int, vector2f, vector2f>(middle_id, maxima.first, maxima.second));
+
 	considered_points.erase(considered_points.begin());
 	considered_points.pop_back();
 
@@ -175,10 +197,13 @@ void run_quickhull(std::vector<vector2f> considered_points,
 
 	SDL_Delay(2000);
 
-	find_hull(right, maxima.first, maxima.second, hull, window, ch_project::color_rgba(255, 0, 0, 255));
-	find_hull(left, maxima.second, maxima.first, hull, window, ch_project::color_rgba(0, 0, 255, 255));
+	find_hull(right, maxima.first, maxima.second, hull, window, ch_project::color_rgba(255, 0, 0, 255), -1);
+	find_hull(left, maxima.second, maxima.first, hull, window, ch_project::color_rgba(0, 0, 255, 255), -1);
 
-	/*return hull;*/
+	remove_from_hull(hull, middle_id);
+	SDL_Delay(1000);
+
+	window->set_hull(hull);
 }
 
 
