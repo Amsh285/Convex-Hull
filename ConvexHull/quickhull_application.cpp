@@ -1,25 +1,5 @@
-// ConvexHull.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#include "quickhull_application.h"
 
-#include <algorithm>
-#include <iostream>
-#include <math.h>
-#include <memory>
-#include <thread>
-#include <vector>
-
-#include "SDL.h"
-
-#include "conversions.h"
-
-#include "point_drawing_window.h"
-#include "quickhull_window.h"
-
-#include "matrix3f.h"
-#include "matrix3f_factory.h"
-
-#include "math_helpers.h"
-#include "main.h"
 
 
 int g_id = 0;
@@ -202,18 +182,12 @@ void run_quickhull(std::vector<vector2f> considered_points,
 	find_hull(left, maxima.second, maxima.first, hull, window, ch_project::color_rgba(0, 0, 255, 255), -1);
 
 	remove_from_hull(hull, middle_id);
+	SDL_Delay(1000);
 
 	window->set_hull(hull);
 }
 
-int main(int argc, char* argv[])
-{
-	run_quickhull_simulation();
-
-	return EXIT_SUCCESS;
-}
-
-void run_quickhull_simulation()
+void quickhull_application::run()
 {
 	std::vector<vector2f> point_cloud;
 
@@ -228,14 +202,3 @@ void run_quickhull_simulation()
 
 	t1.join();
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

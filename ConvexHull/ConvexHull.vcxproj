@@ -164,6 +164,7 @@
     <ClInclude Include="color_rgba.h" />
     <ClInclude Include="conversions.h" />
     <ClInclude Include="drawing_context.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="math_helpers.h" />
     <ClInclude Include="matrix3f.h" />
     <ClInclude Include="matrix3f_factory.h" />
