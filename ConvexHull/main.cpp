@@ -28,7 +28,6 @@
 #pragma region input data
 
 // random points
-std::vector<vector2f> h;
 std::vector<vector2f> generate_random_points()
 {
 	int point_cloud_size;
@@ -44,8 +43,8 @@ std::vector<vector2f> generate_random_points()
 	for (int i = 0; i < point_cloud_size; i++) {
 
 		// get two random float numbers 
-		float x = 0 + static_cast<float>(rand()) * static_cast<float>(1024 - 0) / RAND_MAX;
-		float y = 0 + static_cast<float>(rand()) * static_cast<float>(820 - 0) / RAND_MAX;
+		float x = 10 + static_cast<float>(rand()) * static_cast<float>(1000 - 0) / RAND_MAX;
+		float y = 10 + static_cast<float>(rand()) * static_cast<float>(800 - 0) / RAND_MAX;
 
 		// add to vector and point cloud
 		vector2f tmp(x, y);
@@ -168,6 +167,7 @@ void save_points_to_file(std::vector<vector2f> point_cloud) {
 
 int g_id = 0;
 int quckhull_delay = 500;
+std::vector<std::tuple<int, vector2f, vector2f>> h2;
 
 // quickhull simulation
 void remove_from_hull(std::vector<std::tuple<int, vector2f, vector2f>>& hull, const int& id)
@@ -346,7 +346,8 @@ void quickhull_simulation(std::vector<vector2f> considered_points,
 	find_hull_simulation(right, maxima.first, maxima.second, hull, window, ch_project::color_rgba(255, 0, 0, 255), -1);
 	find_hull_simulation(left, maxima.second, maxima.first, hull, window, ch_project::color_rgba(0, 0, 255, 255), -1);
 
-	remove_from_hull(hull, middle_id);
+	if (hull.size() > 3)
+		remove_from_hull(hull, middle_id);
 
 	window->set_hull(hull);
 }
@@ -478,19 +479,22 @@ void quickhull_performance(std::vector<vector2f> considered_points)
 	find_hull_performance(right, maxima.first, maxima.second, hull, -1);
 	find_hull_performance(left, maxima.second, maxima.first, hull, -1);
 
-	remove_from_hull(hull, middle_id);
+	if(hull.size() > 3)
+		remove_from_hull(hull, middle_id);
 
 	auto end = std::chrono::steady_clock::now();
 
-	//std::cout << "\n\nConvex Hull:" << std::endl;
-	//for (const auto& i : hull)
-		//std::cout << "(" << std::get<2>(i).X() << "," << std::get<2>(i).Y() << ")" << std::endl;
+	std::cout << "\n\nConvex Hull:" << std::endl;
+	int x = 0;
+	for (const auto& i : hull)
+		std::cout <<"Line :"<< ++x << " (" << std::get<2>(i).X() << "," << std::get<2>(i).Y() << ")" << std::endl;
 
+	h2 = hull;
 	// performance
 	std::cout << "\nHull found with Quickhull in: " << std::fixed << std::setprecision(3)
 		<< std::chrono::duration_cast<std::chrono::duration<float>>(end - start).count() << " s"
 		<< " or " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms"
-		<< " and " << h.size() << " Points" << std::endl;
+		<< " and " << hull.size() << " Points" << std::endl;
 
 }
 
@@ -626,17 +630,18 @@ void giftwrapping_performance(std::vector<vector2f> considered_points)
 	} while (currentPoint != leftMostPoint);
 
 	auto end = std::chrono::steady_clock::now();
-	h = hull;
+
 	// print hull
-	//std::cout << "\nConvex hull:" << std::endl;
-	//for (vector2f i : hull)
-	//	std::cout << "(" << i.X() << "," << i.Y() << ")" << std::endl;
+	std::cout << "\nConvex hull:" << std::endl;
+	int x = 0;
+	for (vector2f i : hull)
+		std::cout << "Line: " << ++x << " (" << i.X() << "," << i.Y() << ")" << std::endl;
 
 	// performance
 	std::cout << "\nHull found with Gift wrapping in: " << std::fixed << std::setprecision(3)
 		<< std::chrono::duration_cast<std::chrono::duration<float>>(end - start).count() << " s"
 		<< " or " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms"
-		<< " and " << h.size() << " Points" << std::endl;
+		<< " and " << hull.size() << " Points" << std::endl;
 }
 
 #pragma endregion
@@ -684,15 +689,33 @@ int main(int argc, char* argv[])
 			std::cout << "\n--> Random generated " << std::endl;
 			point_cloud = generate_random_points();
 			//save_points_to_file(point_cloud);
+
+			if (point_cloud.size() < 3)
+			{
+				std::cout << " number of points must be min 3" << std::endl;
+				continue;
+			}
 		}
 		else if (input == "2")
 		{
 			point_cloud = import_file();
+
+			if (point_cloud.size() < 3)
+			{
+				std::cout << " number of points must be min 3" << std::endl;
+				continue;
+			}
 		}
 		else if (input == "3")
 		{
 			point_cloud = draw_points();
 			//save_points_to_file(point_cloud);
+
+			if (point_cloud.size() < 3)
+			{
+				std::cout << " number of points must be min 3" << std::endl;
+				continue;
+			}
 		}
 		else if (input == "q")
 		{
@@ -708,16 +731,18 @@ int main(int argc, char* argv[])
 		switch (mode)
 		{
 		case 0:
+		{
 			giftwrapping_performance(point_cloud);
 			quickhull_performance(point_cloud);
 			break;
-
+		}
 		case 1:
+		{
 			run_giftwrapping_simulation(point_cloud);
 			run_quickhull_simulation(point_cloud);
 			break;
 		}
-			
+		}
 	}
 	
 	return EXIT_SUCCESS;
