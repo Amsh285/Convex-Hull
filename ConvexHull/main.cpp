@@ -13,7 +13,7 @@
 #include "SDL.h"
 #include <windows.h>
 #include <chrono>
-
+#include<iomanip>
 #include "conversions.h"
 
 #include "point_drawing_window.h"
@@ -487,8 +487,10 @@ void quickhull_performance(std::vector<vector2f> considered_points)
 		//std::cout << "(" << std::get<2>(i).X() << "," << std::get<2>(i).Y() << ")" << std::endl;
 
 	// performance
-	std::cout << "\nHull found with Quickhull in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-		<< " ms" << " or " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " ns and " << h.size() << " Points" << std::endl;
+	std::cout << "\nHull found with Quickhull in: " << std::fixed << std::setprecision(3)
+		<< std::chrono::duration_cast<std::chrono::duration<float>>(end - start).count() << " s"
+		<< " or " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms"
+		<< " and " << h.size() << " Points" << std::endl;
 
 }
 
@@ -631,8 +633,10 @@ void giftwrapping_performance(std::vector<vector2f> considered_points)
 	//	std::cout << "(" << i.X() << "," << i.Y() << ")" << std::endl;
 
 	// performance
-	std::cout << "\nHull found with Gift wrapping in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-		<< " ms" << " or " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " ns and " << h.size() << " Points" << std::endl;
+	std::cout << "\nHull found with Gift wrapping in: " << std::fixed << std::setprecision(3)
+		<< std::chrono::duration_cast<std::chrono::duration<float>>(end - start).count() << " s"
+		<< " or " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms"
+		<< " and " << h.size() << " Points" << std::endl;
 }
 
 #pragma endregion
