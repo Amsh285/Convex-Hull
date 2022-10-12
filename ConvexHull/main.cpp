@@ -25,10 +25,149 @@
 #include "math_helpers.h"
 #include "main.h"
 
+#pragma region input data
+
+// random points
+std::vector<vector2f> h;
+std::vector<vector2f> generate_random_points()
+{
+	int point_cloud_size;
+	std::vector<vector2f> point_cloud;
+
+	std::cout << "\n  How many points? ";
+	std::cin >> point_cloud_size;
+
+	// Generate a different random result for rand()
+	srand(time(NULL));
+
+	// save points in vector
+	for (int i = 0; i < point_cloud_size; i++) {
+
+		// get two random float numbers 
+		float x = 0 + static_cast<float>(rand()) * static_cast<float>(1024 - 0) / RAND_MAX;
+		float y = 0 + static_cast<float>(rand()) * static_cast<float>(820 - 0) / RAND_MAX;
+
+		// add to vector and point cloud
+		vector2f tmp(x, y);
+		point_cloud.push_back(tmp);
+	}
+
+	//for (vector2f i : point_cloud)
+	//		std::cout << "\n" << i.X() << "," << i.Y();
+
+	return point_cloud;
+}
+
+// file import
+std::vector<vector2f> import_file()
+{
+	int point_cloud_size;
+	std::vector<vector2f> point_cloud;
+
+	// file dialog
+	OPENFILENAME ofn;
+	TCHAR szFile[260] = { 0 };
+	char fileName[MAX_PATH] = "";
+	HANDLE hf;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	GetOpenFileName(&ofn);
+
+	//std::cout << szFile << std::endl;
+
+	// Open a file in read mode
+	std::fstream inFile;
+	inFile.open(szFile);
+
+	inFile >> point_cloud_size;
+
+	// tmp variables to save line and splitted points
+	std::string line;
+	std::string word;
+
+	// read, split and save for each line x and y
+	for (int i = 0; i < point_cloud_size; i++)
+	{
+		inFile >> line;
+
+		// used for breaking words
+		std::stringstream s(line);
+
+		// x
+		std::getline(s, word, ',');
+		float x = stof(word);
+
+		// y
+		std::getline(s, word);
+		float y = stof(word);
+
+		// add to vector and point cloud
+		vector2f tmp(x, y);
+		point_cloud.push_back(tmp);
+	}
+
+	//for (vector2f i : point_cloud)
+	//	std::cout << "\n" << i.X() << "," << i.Y();
+
+	// Close the file
+	inFile.close();
+
+	return point_cloud;
+}
+
+// draw points
+std::vector<vector2f> draw_points()
+{
+	std::vector<vector2f> point_cloud;
+
+	point_drawing_window point_drawing("Point Drawing");
+	point_drawing.display();
+	point_cloud = point_drawing.get_vectors();
+
+	//for (vector2f i : point_cloud)
+	//	std::cout << "\n" << i.X() << "," << i.Y();
+
+	return point_cloud;
+}
+
+// save points to file
+void save_points_to_file(std::vector<vector2f> point_cloud) {
+
+	OPENFILENAME ofn;
+	TCHAR szFile[260] = { 0 };
+	char fileName[MAX_PATH] = "";
+	HANDLE hf;
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	GetSaveFileName(&ofn);
+
+	// File pointer
+	std::ofstream outFile;
+
+	// creates a new file
+	outFile.open(szFile, std::ios::out);
+
+	// Save number of points in first line
+	outFile << point_cloud.size() << std::endl;
+
+	// save points in file
+	for (vector2f i : point_cloud)
+		outFile << i.X() << "," << i.Y() << std::endl;
+
+	// Close the file
+	outFile.close();
+}
+
+#pragma endregion
+
 #pragma region quickhull
 
 int g_id = 0;
-int quckhull_delay = 0;
+int quckhull_delay = 500;
 
 // quickhull simulation
 void remove_from_hull(std::vector<std::tuple<int, vector2f, vector2f>>& hull, const int& id)
@@ -343,13 +482,13 @@ void quickhull_performance(std::vector<vector2f> considered_points)
 
 	auto end = std::chrono::steady_clock::now();
 
-	std::cout << "\n\nConvex Hull:" << std::endl;
-	for (const auto& i : hull)
-		std::cout << "(" << std::get<2>(i).X() << "," << std::get<2>(i).Y() << ")" << std::endl;
+	//std::cout << "\n\nConvex Hull:" << std::endl;
+	//for (const auto& i : hull)
+		//std::cout << "(" << std::get<2>(i).X() << "," << std::get<2>(i).Y() << ")" << std::endl;
 
 	// performance
 	std::cout << "\nHull found with Quickhull in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-		<< " ms" << " or " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " ns" << std::endl;
+		<< " ms" << " or " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " ns and " << h.size() << " Points" << std::endl;
 
 }
 
@@ -357,7 +496,7 @@ void quickhull_performance(std::vector<vector2f> considered_points)
 
 #pragma region gift wrapping
 
-int giftwrapping_delay = 0;
+int giftwrapping_delay = 25;
 int orientation(vector2f a, vector2f b, vector2f c)
 {
 	// crossproduct
@@ -451,7 +590,7 @@ void giftwrapping_performance(std::vector<vector2f> considered_points)
 	int nextPoint = 0;
 
 	// stores points that form hull
-	std::vector<vector2f> hullvec;
+	std::vector<vector2f> hull;
 
 	auto start = std::chrono::steady_clock::now();
 
@@ -466,7 +605,7 @@ void giftwrapping_performance(std::vector<vector2f> considered_points)
 	{
 		// add first left most point to the hull
 		// then assigns every loop the next estimated point for the hull
-		hullvec.push_back(considered_points[currentPoint]);
+		hull.push_back(considered_points[currentPoint]);
 
 		// sets next point in range
 		nextPoint = (currentPoint + 1) % considered_points.size();
@@ -485,153 +624,15 @@ void giftwrapping_performance(std::vector<vector2f> considered_points)
 	} while (currentPoint != leftMostPoint);
 
 	auto end = std::chrono::steady_clock::now();
-
+	h = hull;
 	// print hull
-	std::cout << "\nConvex hull:" << std::endl;
-	for (vector2f i : hullvec)
-		std::cout << "(" << i.X() << "," << i.Y() << ")" << std::endl;
+	//std::cout << "\nConvex hull:" << std::endl;
+	//for (vector2f i : hull)
+	//	std::cout << "(" << i.X() << "," << i.Y() << ")" << std::endl;
 
 	// performance
 	std::cout << "\nHull found with Gift wrapping in: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
-		<< " ms" << " or " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " ns" << std::endl;
-}
-
-#pragma endregion
-
-#pragma region input data
-
-// random points
-std::vector<vector2f> generate_random_points()
-{
-	int point_cloud_size;
-	std::vector<vector2f> point_cloud;
-
-	std::cout << "\n  How many points? ";
-	std::cin >> point_cloud_size;
-
-	// Generate a different random result for rand()
-	srand(time(NULL));
-
-	// save points in vector
-	for (int i = 0; i < point_cloud_size; i++) {
-
-		// get two random float numbers 
-		float x = 0 + static_cast<float>(rand()) * static_cast<float>(1024 - 0) / RAND_MAX;
-		float y = 0 + static_cast<float>(rand()) * static_cast<float>(820 - 0) / RAND_MAX;
-
-		// add to vector and point cloud
-		vector2f tmp(x, y);
-		point_cloud.push_back(tmp);
-	}
-
-	//for (vector2f i : point_cloud)
-	//		std::cout << "\n" << i.X() << "," << i.Y();
-
-	return point_cloud;
-}
-
-// file import
-std::vector<vector2f> import_file()
-{
-	int point_cloud_size;
-	std::vector<vector2f> point_cloud;
-
-	// file dialog
-	OPENFILENAME ofn;
-	TCHAR szFile[260] = { 0 };
-	char fileName[MAX_PATH] = "";
-	HANDLE hf;
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(ofn);
-	ofn.lpstrFile = szFile;
-	ofn.nMaxFile = sizeof(szFile);
-	GetOpenFileName(&ofn);
-
-	//std::cout << szFile << std::endl;
-
-	// Open a file in read mode
-	std::fstream inFile;
-	inFile.open(szFile);
-
-	inFile >> point_cloud_size;
-
-	// tmp variables to save line and splitted points
-	std::string line;
-	std::string word;
-
-	// read, split and save for each line x and y
-	for (int i = 0; i < point_cloud_size; i++)
-	{
-		inFile >> line;
-
-		// used for breaking words
-		std::stringstream s(line);
-
-		// x
-		std::getline(s, word, ',');
-		float x = stof(word);
-
-		// y
-		std::getline(s, word);
-		float y = stof(word);
-
-		// add to vector and point cloud
-		vector2f tmp(x, y);
-		point_cloud.push_back(tmp);
-	}
-
-	//for (vector2f i : point_cloud)
-	//	std::cout << "\n" << i.X() << "," << i.Y();
-
-	// Close the file
-	inFile.close();
-
-	return point_cloud;
-}
-
-// draw points
-std::vector<vector2f> draw_points()
-{
-	std::vector<vector2f> point_cloud;
-
-	point_drawing_window point_drawing("Point Drawing");
-	point_drawing.display();
-	point_cloud = point_drawing.get_vectors();
-
-	//for (vector2f i : point_cloud)
-	//	std::cout << "\n" << i.X() << "," << i.Y();
-
-	return point_cloud;
-}
-
-// save points to file
-void save_points_to_file(std::vector<vector2f> point_cloud) {
-
-	OPENFILENAME ofn;
-	TCHAR szFile[260] = { 0 };
-	char fileName[MAX_PATH] = "";
-	HANDLE hf;
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(ofn);
-	ofn.lpstrFile = szFile;
-	ofn.nMaxFile = sizeof(szFile);
-	GetSaveFileName(&ofn);
-
-	// File pointer
-	std::ofstream outFile;
-
-	// creates a new file
-	outFile.open(szFile, std::ios::out);
-
-	// Save number of points in first line
-	outFile << point_cloud.size() << std::endl;
-
-	// save points in file
-	for (vector2f i : point_cloud) 
-		outFile << i.X() << "," << i.Y() << std::endl;
-	
-	// Close the file
-	outFile.close();
+		<< " ms" << " or " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() << " ns and " << h.size() << " Points" << std::endl;
 }
 
 #pragma endregion
